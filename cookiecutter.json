@@ -1,0 +1,10 @@
+{
+    "repo_name": "terraform_project",
+    "terraform_version": "1.5.0",
+    "aws_region": "eu-west-1",
+    "backend": "s3 or local",
+    "s3_bucket_name_dev": "",
+    "s3_bucket_name_qa": "",
+    "s3_bucket_name_prod": ""
+  }
+  

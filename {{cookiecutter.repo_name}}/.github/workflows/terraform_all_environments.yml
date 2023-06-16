@@ -1,0 +1,47 @@
+name: 'Terraform All Environments'
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+jobs:
+  terraform:
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        environment: ['development', 'qa', 'production']
+    env:
+      DEV_AWS_ACCESS_KEY_ID: {% raw %} ${{ secrets.DEV_AWS_ACCESS_KEY_ID }} {% endraw %}
+      DEV_AWS_SECRET_ACCESS_KEY: {% raw %} ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }} {% endraw %}
+      QA_AWS_ACCESS_KEY_ID: {% raw %} ${{ secrets.QA_AWS_ACCESS_KEY_ID }} {% endraw %}
+      QA_AWS_SECRET_ACCESS_KEY: {% raw %} ${{ secrets.QA_AWS_SECRET_ACCESS_KEY }} {% endraw %}
+      PROD_AWS_ACCESS_KEY_ID: {% raw %} ${{ secrets.PROD_AWS_ACCESS_KEY_ID }} {% endraw %}
+      PROD_AWS_SECRET_ACCESS_KEY: {% raw %} ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }} {% endraw %}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: "{{cookiecutter.terraform_version}}"
+    - name: Terraform Init
+      run: |
+        {% raw %}
+        cd ${{ matrix.environment }} && terraform init
+        {% endraw %}
+    - name: Terraform Validate
+      run: |
+        {% raw %}
+        cd ${{ matrix.environment }} && terraform validate
+        {% endraw %}
+    - name: Terraform Plan
+      run: |
+        {% raw %}
+        cd ${{ matrix.environment }} && terraform plan
+        {% endraw %}
+    - name: Terraform Apply
+      run: |
+        {% raw %}
+        cd ${{ matrix.environment }} && terraform apply -auto-approve
+        {% endraw %}
